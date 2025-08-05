@@ -2,19 +2,26 @@
 
 namespace App\Services;
 
+use Exception;
+
 class CsvParserService
 {
-    public function parse(string $filename): array
+    public function parse(string $rawInput): array
     {
+        if (empty(trim($rawInput))) {
+            throw new Exception('Input CSV data is empty.');
+        }
+
         $rows = [];
+        $lines = explode("\n", $rawInput);
 
-        if (($handle = fopen($filename, 'r')) !== false) {
-            fgetcsv($handle);
+        array_shift($lines);
 
-            while (($data = fgetcsv($handle)) !== false) {
+        foreach ($lines as $line) {
+            $data = str_getcsv($line, ',', '"', '\\');
+            if (!empty($data[0])) {
                 $rows[] = $data[0];
             }
-            fclose($handle);
         }
 
         return $rows;
