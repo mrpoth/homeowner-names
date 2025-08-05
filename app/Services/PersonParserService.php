@@ -8,27 +8,14 @@ use Illuminate\Support\Collection;
 class PersonParserService
 {
 
+    public function __construct(private CsvParserService $csvParser)
+    {}
+    
     public function getHomeOwnerNames(string $input): Collection
     {
-        $namesFromCsv = $this->csvParser($input);
+        $namesFromCsv = $this->csvParser->parse($input);
         $people = collect($this->generatePersons($namesFromCsv));
         return $people->map(fn($person) => $person->toArray());
-    }
-
-    private function csvParser(string $filename): array
-    {
-        $rows = [];
-
-        if (($handle = fopen($filename, 'r')) !== false) {
-            fgetcsv($handle);
-
-            while (($data = fgetcsv($handle)) !== false) {
-                $rows[] = $data[0];
-            }
-            fclose($handle);
-        }
-
-        return $rows;
     }
 
     private function generatePersons(array $names): array
