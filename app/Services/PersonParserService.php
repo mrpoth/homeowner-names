@@ -3,15 +3,16 @@
 namespace App\Services;
 
 use App\ValueObjects\Person;
-
+use Illuminate\Support\Collection;
 
 class PersonParserService
 {
 
-    public function getHomeOwnerNames(string $input)
+    public function getHomeOwnerNames(string $input): Collection
     {
         $namesFromCsv = $this->csvParser($input);
-        $this->generatePersons($namesFromCsv);
+        $people = collect($this->generatePersons($namesFromCsv));
+        return $people->map(fn($person) => $person->toArray());
     }
 
     private function csvParser(string $filename): array
@@ -30,7 +31,7 @@ class PersonParserService
         return $rows;
     }
 
-    private function generatePersons(array $names)
+    private function generatePersons(array $names): array
     {
         $persons = [];
         foreach ($names as $name) {

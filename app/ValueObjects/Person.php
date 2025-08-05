@@ -31,17 +31,13 @@ final class Person
         return $this->lastName;
     }
 
-    // Optional: A method to get full name formatted nicely
-    public function getFullName(): string
+    public function toArray(): array
     {
-        $parts = [$this->title, $this->firstName];
-
-        if ($this->initial !== null) {
-            $parts[] = $this->initial;
-        }
-
-        $parts[] = $this->lastName;
-
-        return implode(' ', $parts);
+        return [
+            'title' => $this->title,
+            'first_name' => $this->firstName,
+            'initial' => $this->initial,
+            'last_name' => $this->lastName,
+        ];
     }
 }
