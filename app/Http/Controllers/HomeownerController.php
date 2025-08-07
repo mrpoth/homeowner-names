@@ -10,6 +10,6 @@ class HomeownerController extends Controller
 {
     public function __invoke(PersonParserService $personParserService): Collection
     {
-        return $personParserService->getHomeOwnerNames(storage_path(Storage::get('examples-4-.csv')));
+        return $personParserService->getHomeOwnerNames(Storage::get('examples-4-.csv'));
     }
 }
