@@ -2,7 +2,9 @@
 
 namespace App\ValueObjects;
 
-final class Person
+use JsonSerializable;
+
+final class Person implements JsonSerializable
 {
     public function __construct(
         private string $title,
@@ -31,7 +33,7 @@ final class Person
         return $this->lastName;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         return [
             'title' => $this->title,

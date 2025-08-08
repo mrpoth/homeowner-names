@@ -14,11 +14,11 @@ class PersonParserService
     public function getHomeOwnerNames(string $input): Collection
     {
         $namesFromCsv = $this->csvParser->parse($input);
-        $people = collect($this->generatePersons($namesFromCsv));
-        return $people->map(fn($person) => $person->toArray());
+        $people = $this->generatePersons($namesFromCsv);
+        return $people;
     }
 
-    private function generatePersons(array $names): array
+    private function generatePersons(array $names): Collection
     {
         $persons = [];
         foreach ($names as $name) {
@@ -48,7 +48,7 @@ class PersonParserService
             }
         }
 
-        return $persons;
+        return collect($persons);
     }
 
     private function createPerson($nameParts): Person
