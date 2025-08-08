@@ -19,7 +19,7 @@ class CsvParserService
 
         foreach ($lines as $line) {
             $data = str_getcsv($line, ',', '"', '\\');
-            if (!empty($data[0])) {
+            if (! empty($data[0])) {
                 $rows[] = $data[0];
             }
         }
