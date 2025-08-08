@@ -8,9 +8,8 @@ use Illuminate\Support\Collection;
 class PersonParserService
 {
 
-    public function __construct(private CsvParserService $csvParser)
-    {}
-    
+    public function __construct(private CsvParserService $csvParser) {}
+
     public function getHomeOwnerNames(string $input): Collection
     {
         $namesFromCsv = $this->csvParser->parse($input);
@@ -20,35 +19,35 @@ class PersonParserService
 
     private function generatePersons(array $names): Collection
     {
-        $persons = [];
-        foreach ($names as $name) {
+        $people = collect($names)->flatMap(function (string $name) {
             $nameArray = preg_split('/\s*(?:and|&)\s*/i', $name);
+            $nameParts =  explode(' ', $name);
             $isCouple = count($nameArray) > 1;
-            if ($isCouple) {
-                $firstPersonName =  explode(' ', $nameArray[0]);
-                $secondPersonName =  explode(' ', $nameArray[1]);
-                if (count($firstPersonName) > 1) {
-                    $person1 = $this->createPerson($firstPersonName);
-                    $person2 = $this->createPerson($secondPersonName);
-                } else {
-                    $person2 = $this->createPerson($secondPersonName);
-                    $person1 = new Person(
-                        $firstPersonName[0],
-                        null,
-                        null,
-                        $person2->getLastName()
-                    );
-                }
-                $persons[] = $person1;
-                $persons[] = $person2;
-            } else {
-                $nameParts =  explode(' ', $name);
-                $person = $this->createPerson($nameParts);
-                $persons[] = $person;
-            }
-        }
+            return  $isCouple
+                ? $this->handleCouples($nameArray)
+                : [$this->createPerson($nameParts)];
+        });
 
-        return collect($persons);
+        return $people;
+    }
+
+    private function handleCouples($nameArray): array
+    {
+        $firstPersonName =  explode(' ', $nameArray[0]);
+        $secondPersonName =  explode(' ', $nameArray[1]);
+        if (count($firstPersonName) > 1) {
+            $person1 = $this->createPerson($firstPersonName);
+            $person2 = $this->createPerson($secondPersonName);
+        } else {
+            $person2 = $this->createPerson($secondPersonName);
+            $person1 = new Person(
+                $firstPersonName[0],
+                null,
+                null,
+                $person2->getLastName()
+            );
+        }
+        return [$person1, $person2];
     }
 
     private function createPerson($nameParts): Person
